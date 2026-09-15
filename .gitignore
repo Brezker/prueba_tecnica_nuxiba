@@ -1,0 +1,34 @@
+## OBTENIDOS POR COMPILACIÓN (Archivos temporales de .NET)
+[Bb]in/
+[Oo]bj/
+
+#appsettings.Development.json
+#usersecrets.json
+
+## PAQUETES Y HERRAMIENTAS
+# Paquetes NuGet descargados automáticamente
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+project.assets.json
+project.lock.json
+
+## EDITORES DE CÓDIGO
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+
+# Rider / JetBrains
+.idea/
+
+## SISTEMA OPERATIVO
+.DS_Store
+Thumbs.db
+
