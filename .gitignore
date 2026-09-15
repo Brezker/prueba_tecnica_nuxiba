@@ -1,6 +1,9 @@
 ## OBTENIDOS POR COMPILACIÓN (Archivos temporales de .NET)
 [Bb]in/
 [Oo]bj/
+TestBackNuxiba/[Bb]in/
+TestBackNuxiba/[Oo]bj/
+
 
 #appsettings.Development.json
 #usersecrets.json
