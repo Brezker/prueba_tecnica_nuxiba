@@ -1,5 +1,8 @@
-﻿namespace TestBackNuxiba.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace TestBackNuxiba.Models;
+
+[Table("ccloglogin")]
 public class Login
 {
     public long LogLoginId { get; set; }

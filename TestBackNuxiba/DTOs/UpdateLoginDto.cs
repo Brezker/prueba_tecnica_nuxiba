@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TestBackNuxiba.DTOs.Validators;
 
 namespace TestBackNuxiba.DTOs;
 
@@ -15,5 +16,6 @@ public class UpdateLoginDto
     public int TipoMov { get; set; }
 
     [Required]
+    [CreateLoginValidator]
     public DateTime fecha { get; set; }
 }

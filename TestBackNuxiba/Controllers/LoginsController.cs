@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TestBackNuxiba.DTOs;
+using TestBackNuxiba.Models;
 using TestBackNuxiba.Services;
 
 namespace TestBackNuxiba.Controllers;
 
+// Errors are not handled here: the service throws NotFoundException / BusinessRuleException
+// and GlobalExceptionHandler turns them into ProblemDetails responses.
 [ApiController]
 [Route("logins")]
+[Produces("application/json")]
 public class LoginsController : ControllerBase
 {
     private readonly ILoginService _loginService;
@@ -18,6 +22,7 @@ public class LoginsController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<Login>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var logins = await _loginService.GetAllAsync();
@@ -26,85 +31,45 @@ public class LoginsController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(Login), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create(CreateLoginDto dto)
     {
-        try
-        {
-            var login = await _loginService.CreateAsync(dto);
+        var login = await _loginService.CreateAsync(dto);
 
-            return CreatedAtAction(
-                nameof(GetAll),
-                null,
-                login);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new
-            {
-                message = ex.Message
-            });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new
-            {
-                message = ex.Message
-            });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new
-            {
-                message = ex.Message
-            });
-        }
+        return CreatedAtAction(
+            nameof(GetAll),
+            null,
+            login);
     }
 
     [HttpPut("{id:long}")]
+    [ProducesResponseType(typeof(Login), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
     long id,
     UpdateLoginDto dto)
     {
-        try
-        {
-            var login = await _loginService.UpdateAsync(id, dto);
+        var login = await _loginService.UpdateAsync(id, dto);
 
-            if (login == null)
-            {
-                return NotFound(new
-                {
-                    message = $"Login record with id {id} was not found."
-                });
-            }
-
-            return Ok(login);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new
-            {
-                message = ex.Message
-            });
-        }
+        return Ok(login);
     }
 
     [HttpDelete("{id:long}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(long id)
     {
-        var deleted = await _loginService.DeleteAsync(id);
-
-        if (!deleted)
-        {
-            return NotFound(new
-            {
-                message = $"Login record with id {id} was not found."
-            });
-        }
+        await _loginService.DeleteAsync(id);
 
         return NoContent();
     }
 
     [HttpGet("report")]
+    [Produces("text/csv")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GenerateReport()
     {
         var csv = await _reportService.GenerateLoginReportAsync();

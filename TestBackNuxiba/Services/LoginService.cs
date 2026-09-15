@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TestBackNuxiba.Data;
 using TestBackNuxiba.DTOs;
+using TestBackNuxiba.Exceptions;
 using TestBackNuxiba.Models;
 
 namespace TestBackNuxiba.Services;
@@ -26,7 +27,7 @@ public class LoginService : ILoginService
 
         if (!userExists)
         {
-            throw new KeyNotFoundException(
+            throw new NotFoundException(
                 $"User with id {userId} does not exist.");
         }
 
@@ -68,11 +69,11 @@ public class LoginService : ILoginService
                 {
                     if (movement.TipoMov == 1)
                     {
-                        throw new InvalidOperationException(
+                        throw new BusinessRuleException(
                             "The user cannot register a login without a previous logout.");
                     }
 
-                    throw new InvalidOperationException(
+                    throw new BusinessRuleException(
                         "The user cannot register a logout without a previous login.");
                 }
             }
@@ -83,7 +84,7 @@ public class LoginService : ILoginService
         // The first movement must always be a login.
         if (movements.Count > 0 && movements[0].TipoMov != 1)
         {
-            throw new InvalidOperationException(
+            throw new BusinessRuleException(
                 "The first movement for a user must be a login.");
         }
     }
@@ -98,17 +99,18 @@ public class LoginService : ILoginService
 
     public async Task<Login> CreateAsync(CreateLoginDto dto)
     {
+        var fecha = DateTime.Now;
         await ValidateMovementAsync(
             dto.User_id,
             dto.TipoMov,
-            dto.fecha);
+            fecha);
 
         var login = new Login
         {
             User_id = dto.User_id,
             Extension = dto.Extension,
             TipoMov = dto.TipoMov,
-            fecha = dto.fecha
+            fecha = fecha
         };
 
         _context.Logins.Add(login);
@@ -118,7 +120,7 @@ public class LoginService : ILoginService
         return login;
     }
 
-    public async Task<Login?> UpdateAsync(
+    public async Task<Login> UpdateAsync(
     long id,
     UpdateLoginDto dto)
     {
@@ -127,7 +129,8 @@ public class LoginService : ILoginService
 
         if (login == null)
         {
-            return null;
+            throw new NotFoundException(
+                $"Login record with id {id} was not found.");
         }
 
         await ValidateMovementAsync(
@@ -197,7 +200,7 @@ public class LoginService : ILoginService
             User_id = dto.User_id,
             Extension = dto.Extension,
             TipoMov = dto.TipoMov,
-            fecha = dto.fecha
+            fecha = DateTime.Now
         };
 
         // 7. Save
@@ -240,20 +243,19 @@ public class LoginService : ILoginService
         return login;
     }
 
-    public async Task<bool> DeleteAsync(long id)
+    public async Task DeleteAsync(long id)
     {
         var login = await _context.Logins
             .FirstOrDefaultAsync(l => l.LogLoginId == id);
 
         if (login == null)
         {
-            return false;
+            throw new NotFoundException(
+                $"Login record with id {id} was not found.");
         }
 
         _context.Logins.Remove(login);
 
         await _context.SaveChangesAsync();
-
-        return true;
     }
 }

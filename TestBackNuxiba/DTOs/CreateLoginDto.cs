@@ -14,6 +14,7 @@ public class CreateLoginDto
     [Range(0, 1, ErrorMessage = "TipoMov must be 0 (logout) or 1 (login).")]
     public int TipoMov { get; set; }
 
-    [Required]
-    public DateTime fecha { get; set; }
+    //[Required]
+    ////[CreateLoginValidator]
+    //public DateTime fecha { get; set; }
 }

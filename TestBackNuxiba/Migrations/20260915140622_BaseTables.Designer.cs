@@ -12,8 +12,8 @@ using TestBackNuxiba.Data;
 namespace TestBackNuxiba.Migrations
 {
     [DbContext(typeof(CCenterDbContext))]
-    [Migration("20260827215500_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260915140622_BaseTables")]
+    partial class BaseTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,6 +77,8 @@ namespace TestBackNuxiba.Migrations
 
                     b.ToTable("ccloglogin", null, t =>
                         {
+                            t.ExcludeFromMigrations();
+
                             t.HasCheckConstraint("CK_ccloglogin_TipoMov", "[TipoMov] IN (0, 1)");
                         });
                 });

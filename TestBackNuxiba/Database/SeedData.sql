@@ -300,3 +300,8 @@ ORDER BY
     l.User_id,
     l.fecha;
 GO
+
+SELECT
+    *
+FROM ccloglogin
+GO
